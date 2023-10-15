@@ -1,1 +1,1 @@
-This is bitmap game editor
+# This is bitmap game editor
