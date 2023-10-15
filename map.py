@@ -18,15 +18,6 @@ MAP_YOFFSET = 10
 MAP_WIDTH = 30
 MAP_HEIGHT = 30
 
-WALL_LEFT = 0x01
-WALL_BOTTOM = 0x02
-WALL_RIGHT = 0x04
-WALL_TOP = 0x08
-WALL_ALL = 0x0F
-
-WALL_COLOR = COLOR_RED
-WALL_WIDTH = 1
-
 map_dict = {
     1 : ['id_block_plain'],
     2 : ['id_block_grass'],
