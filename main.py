@@ -77,6 +77,11 @@ def edit_map() :
                     map.save()
                 elif event.key == pygame.K_x :
                     return
+            elif event.type == pygame.MOUSEBUTTONUP :
+                mouse_pos = pygame.mouse.get_pos()
+                x, y = map.get_pos(mouse_pos)
+                if x != None or y != None :
+                    cursor.set_pos(x, y)               
 
         # Move cursor
         if direction != 0 :

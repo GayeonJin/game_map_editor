@@ -57,8 +57,15 @@ class map_object :
         pad_height = 2 * MAP_YOFFSET + self.rows * self.obj_height
         return (pad_width, pad_height) 
 
-    def get_map_rect(self) :
-        map_rect = pygame.Rect(MAP_XOFFSET, MAP_YOFFSET, self.obj_width, self.obj_height)
+    def get_pos(self, screen_xy) :
+        for y in range(self.rows) :
+            for x in range(self.cols) :
+                map_rect = self.get_map_rect(x, y)
+                if screen_xy[0] > map_rect.left and screen_xy[0] < map_rect.right :
+                    if screen_xy[1] > map_rect.top and screen_xy[1] < map_rect.bottom :      
+                        return (x, y)
+                    
+        return (None, None)
 
     def get_map_rect(self, x, y) :
         map_rect = pygame.Rect(MAP_XOFFSET, MAP_YOFFSET, self.obj_width , self.obj_height)
