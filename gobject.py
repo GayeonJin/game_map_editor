@@ -8,7 +8,7 @@ from time import sleep
 from gresource import *
 
 class game_ctrl :
-    def __init(self) :
+    def __init__(self) :
         self.gamepad = None 
         self.pad_width = 640
         self.pad_height = 320
@@ -95,33 +95,6 @@ class game_object :
                 if (self.y > enemy_item.y and self.y < enemy_item.ey) or (self.ey > enemy_item.y and self.ey < enemy_item.ey) :
                     return True
         return False
-
-class backgroud_object(game_object) :
-    def __init__(self, resource_id) :
-        resource_path = get_img_resource(resource_id)
-        self.object = pygame.image.load(resource_path)
-        self.object2 = self.object.copy()
-
-        self.width = self.object.get_width()
-        self.height = self.object.get_height()
-
-        self.x = 0
-        self.x2 = self.width
-        self.scroll_width = -2
-
-    def scroll(self) :
-        self.x += self.scroll_width
-        self.x2 += self.scroll_width
-
-        if self.x == -self.width:
-            self.x = self.width
-
-        if self.x2 == -self.width:
-            self.x2 = self.width
-
-    def draw(self) :
-        gctrl.gamepad.blit(self.object, (self.x, 0))
-        gctrl.gamepad.blit(self.object2, (self.x2, 0))
 
 gctrl = game_ctrl()
 

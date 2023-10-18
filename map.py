@@ -41,6 +41,8 @@ class map_object :
                 self.map[x].append(1)
 
         self.object = {}
+        self.x_offset = MAP_XOFFSET
+        self.y_offset = MAP_YOFFSET
         self.obj_width = MAP_WIDTH
         self.obj_height = MAP_HEIGHT
 
@@ -53,8 +55,8 @@ class map_object :
         return self.rows, self.cols
 
     def get_padsize(self) :
-        pad_width = 2 * MAP_XOFFSET + self.cols * self.obj_width 
-        pad_height = 2 * MAP_YOFFSET + self.rows * self.obj_height
+        pad_width = 2 * self.x_offset + self.cols * self.obj_width 
+        pad_height = 2 * self.y_offset + self.rows * self.obj_height
         return (pad_width, pad_height) 
 
     def get_pos(self, screen_xy) :
@@ -68,7 +70,7 @@ class map_object :
         return (None, None)
 
     def get_map_rect(self, x, y) :
-        map_rect = pygame.Rect(MAP_XOFFSET, MAP_YOFFSET, self.obj_width , self.obj_height)
+        map_rect = pygame.Rect(self.x_offset, self.y_offset, self.obj_width , self.obj_height)
 
         # map[0][0] is left and bottom
         map_rect.x += x * self.obj_width 
@@ -79,7 +81,7 @@ class map_object :
         return self.map[x][y]
 
     def draw(self) :
-        map_rect = pygame.Rect(MAP_XOFFSET, MAP_YOFFSET, self.obj_width, self.obj_height)
+        map_rect = pygame.Rect(self.x_offset, self.y_offset, self.obj_width, self.obj_height)
 
         # map[0][0] is left and bottom
         map_rect.y += (self.rows - 1) * self.obj_height 
@@ -94,7 +96,7 @@ class map_object :
 
                 map_rect.x += self.obj_width
             map_rect.y -= self.obj_height
-            map_rect.x = MAP_XOFFSET
+            map_rect.x = self.x_offset
 
     def load(self, filename = 'default_map.csv') :
         print("load map : " + filename)
