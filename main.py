@@ -35,7 +35,7 @@ def draw_message(str) :
 
 def draw_info() :
     font = pygame.font.SysFont('Verdana', INFO_FONT)
-    info = font.render('F1 : load map   F2 : save map   1-7 : item  x : exit', True, COLOR_BLACK)
+    info = font.render('F1 : load map   F2 : save map   F10 : capture scr   1-7 : item  x : exit', True, COLOR_BLACK)
 
     pygame.draw.rect(gctrl.gamepad, COLOR_PURPLE, (0, gctrl.pad_height - INFO_HEIGHT, gctrl.pad_width, INFO_HEIGHT))
     gctrl.gamepad.blit(info, (INFO_OFFSET * 2, gctrl.pad_height - INFO_FONT - INFO_OFFSET))
