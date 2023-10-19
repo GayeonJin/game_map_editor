@@ -17,8 +17,14 @@ from gobject import *
 from map import *
 from cursor import *
 
+TITLE_STR = "Game Editor"
+
+INFO_HEIGHT = 40
+INFO_OFFSET = 10
+INFO_FONT = 20
+
 def draw_message(str) :
-    font = pygame.font.Font('freesansbold.ttf', 40)
+    font = pygame.font.Font('Verdana', 40)
     text_suf = font.render(str, True, COLOR_BLACK)
     text_rect = text_suf.get_rect()
     text_rect.center = ((gctrl.pad_width / 2), (gctrl.pad_height / 2))
@@ -26,6 +32,13 @@ def draw_message(str) :
     gctrl.gamepad.blit(text_suf, text_rect)
     pygame.display.update()
     sleep(2)
+
+def draw_info() :
+    font = pygame.font.SysFont('Verdana', INFO_FONT)
+    info = font.render('F1 : load map   F2 : save map   1-7 : item  x : exit', True, COLOR_BLACK)
+
+    pygame.draw.rect(gctrl.gamepad, COLOR_PURPLE, (0, gctrl.pad_height - INFO_HEIGHT, gctrl.pad_width, INFO_HEIGHT))
+    gctrl.gamepad.blit(info, (INFO_OFFSET * 2, gctrl.pad_height - INFO_FONT - INFO_OFFSET))
 
 def terminate() :
     pygame.quit()
@@ -57,24 +70,14 @@ def edit_map() :
                     direction = CURSOR_MOVE_LEFT
                 elif event.key == pygame.K_RIGHT :
                     direction = CURSOR_MOVE_RIGHT
-                elif event.key == pygame.K_1 :
-                    map_type = 1
-                elif event.key == pygame.K_2 :
-                    map_type = 2
-                elif event.key == pygame.K_3 :
-                    map_type = 3
-                elif event.key == pygame.K_4:
-                    map_type = 4
-                elif event.key == pygame.K_5 :
-                    map_type = 5
-                elif event.key == pygame.K_6 :
-                    map_type = 6
-                elif event.key == pygame.K_7:
-                    map_type = 7        
-                elif event.key == pygame.K_q :               
+                elif event.key >= pygame.K_1 and event.key <= pygame.K_7 : 
+                    map_type = event.key - pygame.K_0
+                elif event.key == pygame.K_F1 :               
                     map.load()
-                elif event.key == pygame.K_w :
+                elif event.key == pygame.K_F2 :
                     map.save()
+                elif event.key == pygame.K_F10 :
+                    gctrl.save_scr_capture(TITLE_STR)
                 elif event.key == pygame.K_x :
                     return
             elif event.type == pygame.MOUSEBUTTONUP :
@@ -102,6 +105,9 @@ def edit_map() :
         # Draw cursor
         cursor.draw_rect(COLOR_BLACK, 1)
 
+        # Draw info
+        draw_info()
+
         pygame.display.update()
         clock.tick(60)
 
@@ -110,7 +116,7 @@ def start_game_edit() :
     gctrl.gamepad.fill(COLOR_WHITE)
 
     font = pygame.font.Font('freesansbold.ttf', 20)
-    text_suf = font.render("Game Editor", True, COLOR_BLACK)
+    text_suf = font.render(TITLE_STR, True, COLOR_BLACK)
     text_rect = text_suf.get_rect()
     text_rect.center = ((gctrl.pad_width / 2), (gctrl.pad_height / 2))
     gctrl.gamepad.blit(text_suf, text_rect)
@@ -159,7 +165,7 @@ def init_game_edit() :
     (pad_width, pad_height) = map.get_padsize()
 
     gctrl.set_param(pygame.display.set_mode((pad_width, pad_height)), pad_width, pad_height)
-    pygame.display.set_caption("Game Editor")
+    pygame.display.set_caption(TITLE_STR)
 
 if __name__ == '__main__' :
     init_game_edit()
