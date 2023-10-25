@@ -49,11 +49,15 @@ def edit_map() :
     global map, res_ctrl
 
     cursor = cursor_object(map)
-
     cursor.x = 0
     cursor.y = 0
+
     direction = 0
     
+    pre_x = 0
+    pre_y = 0
+    mouse_drag = False
+
     map_type = 0
     edit_exit = False
     while not edit_exit :
@@ -63,9 +67,9 @@ def edit_map() :
 
             if event.type == pygame.KEYUP :
                 if event.key == pygame.K_UP:
-                    direction = CURSOR_MOVE_UP
-                elif event.key == pygame.K_DOWN :
                     direction = CURSOR_MOVE_DOWN
+                elif event.key == pygame.K_DOWN :
+                    direction = CURSOR_MOVE_UP
                 elif event.key == pygame.K_LEFT :
                     direction = CURSOR_MOVE_LEFT
                 elif event.key == pygame.K_RIGHT :
@@ -82,15 +86,45 @@ def edit_map() :
                     gctrl.save_scr_capture(TITLE_STR)
                 elif event.key == pygame.K_x :
                     return
-            elif event.type == pygame.MOUSEBUTTONUP :
+            elif event.type == pygame.MOUSEBUTTONDOWN :
+                l_button, wheel, r_button = pygame.mouse.get_pressed()
                 mouse_pos = pygame.mouse.get_pos()
                 x, y = map.get_pos(mouse_pos)
                 if x != None or y != None :
+                    mouse_drag = True
                     cursor.set_pos(x, y)
+                    if l_button :
+                        map.set_map_type(cursor.x, cursor.y, res_ctrl.get_select())
+                    pre_x = x
+                    pre_y = y
+
+            elif event.type == pygame.MOUSEMOTION :
+                if mouse_drag == True :
+                    mouse_pos = pygame.mouse.get_pos()
+                    x, y = map.get_pos(mouse_pos)
+                    if x != None or y != None :
+                        if pre_x != x or pre_y != y :
+                            cursor.set_pos(x, y)
+                            if l_button :
+                                map.set_map_type(cursor.x, cursor.y, res_ctrl.get_select())          
+                            pre_x = x
+                            pre_y = y
+
+            elif event.type == pygame.MOUSEBUTTONUP :
+                mouse_drag = False
+                mouse_pos = pygame.mouse.get_pos()
+                x, y = map.get_pos(mouse_pos)
+                if x != None or y != None :
+                    if pre_x != x or pre_y != y :
+                        cursor.set_pos(x, y)
+                        if l_button :
+                            map.set_map_type(cursor.x, cursor.y, res_ctrl.get_select())
+                        pre_x = x
+                        pre_y = y
 
                 x, y = res_ctrl.get_pos(mouse_pos)
                 if x != None and y != None :
-                    res_ctrl.select(x, y)
+                    res_ctrl.select(x, y)                        
 
         # Move cursor
         if direction != 0 :
