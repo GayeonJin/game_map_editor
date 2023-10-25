@@ -35,7 +35,7 @@ def draw_message(str) :
 
 def draw_info() :
     font = pygame.font.SysFont('Verdana', INFO_FONT)
-    info = font.render('F1 : load map   F2 : save map   F10 : capture scr   1-7 : item  x : exit', True, COLOR_BLACK)
+    info = font.render('F1 : load map   F2 : save map   F10 : capture scr   1-7 : item  space : select', True, COLOR_BLACK)
 
     pygame.draw.rect(gctrl.gamepad, COLOR_PURPLE, (0, gctrl.pad_height - INFO_HEIGHT, gctrl.pad_width, INFO_HEIGHT))
     gctrl.gamepad.blit(info, (INFO_OFFSET * 2, gctrl.pad_height - INFO_FONT - INFO_OFFSET))
@@ -46,7 +46,7 @@ def terminate() :
 
 def edit_map() :
     global clock
-    global map
+    global map, res_ctrl
 
     cursor = cursor_object(map)
 
@@ -72,6 +72,8 @@ def edit_map() :
                     direction = CURSOR_MOVE_RIGHT
                 elif event.key >= pygame.K_1 and event.key <= pygame.K_7 : 
                     map_type = event.key - pygame.K_0
+                elif event.key == pygame.K_SPACE :
+                    map_type = res_ctrl.get_select()
                 elif event.key == pygame.K_F1 :               
                     map.load()
                 elif event.key == pygame.K_F2 :
@@ -84,7 +86,11 @@ def edit_map() :
                 mouse_pos = pygame.mouse.get_pos()
                 x, y = map.get_pos(mouse_pos)
                 if x != None or y != None :
-                    cursor.set_pos(x, y)               
+                    cursor.set_pos(x, y)
+
+                x, y = res_ctrl.get_pos(mouse_pos)
+                if x != None and y != None :
+                    res_ctrl.select(x, y)
 
         # Move cursor
         if direction != 0 :
@@ -93,7 +99,7 @@ def edit_map() :
 
         # Change wall
         if map_type != 0 :
-            map.edit_map(cursor.x, cursor.y, map_type)
+            map.set_map_type(cursor.x, cursor.y, map_type)
             map_type = 0
             
         # Clear gamepad
@@ -104,6 +110,9 @@ def edit_map() :
 
         # Draw cursor
         cursor.draw_rect(COLOR_BLACK, 1)
+
+        # Draw resource control
+        res_ctrl.draw()
 
         # Draw info
         draw_info()
@@ -152,7 +161,7 @@ def start_game_edit() :
        
 def init_game_edit() :
     global clock
-    global map
+    global map, res_ctrl
 
     pygame.init()
     clock = pygame.time.Clock()
@@ -163,10 +172,20 @@ def init_game_edit() :
         m_res.add(resource_key, game_object(0, 0, get_map_resource(resource_key)))
 
     # map
-    map = map_object(MAX_ROWS, MAX_COLS)
+    map = game_map(MAX_ROWS, MAX_COLS)
     map.register_resouce(m_res)
+    map_rect = map.get_pad_rect()
 
-    (pad_width, pad_height) = map.get_padsize()
+    # resource control
+    res_ctrl = resource_map(1, m_res.get_length(), MAP_XOFFSET, MAP_YOFFSET + map_rect.bottom)
+    res_ctrl.register_resouce(m_res)
+    res_ctrl_rect = res_ctrl.get_pad_rect()
+
+    for i in range(m_res.get_length()) :
+        res_ctrl.set_map_type(i, 0, i + 1)
+
+    pad_width = map_rect.width
+    pad_height = res_ctrl_rect.bottom + INFO_HEIGHT
 
     gctrl.set_param(pygame.display.set_mode((pad_width, pad_height)), pad_width, pad_height)
     pygame.display.set_caption(TITLE_STR)

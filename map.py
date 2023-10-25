@@ -13,7 +13,7 @@ MAX_ROWS = 8
 MAX_COLS = 16
 
 MAP_XOFFSET = 10
-MAP_YOFFSET = 50
+MAP_YOFFSET = 10
 
 MAP_WIDTH = 30
 MAP_HEIGHT = 30
@@ -39,6 +39,9 @@ class map_resource :
         self.width = item.width
         self.height = item.height
 
+    def get_length(self) :
+        return len(self.object)
+
     def draw(self, map_type, rect) :
         keys = map_dict[map_type]
         if keys != None :
@@ -49,7 +52,7 @@ class map_resource :
         return False        
 
 class map_object :
-    def __init__(self, rows, cols) :
+    def __init__(self, rows, cols, x_offset = MAP_XOFFSET, y_offset = MAP_YOFFSET) :
         self.map = []
 
         self.rows = rows
@@ -60,19 +63,20 @@ class map_object :
             for y in range(rows) :
                 self.map[x].append(1)
 
-        self.x_offset = MAP_XOFFSET
-        self.y_offset = MAP_YOFFSET
+        self.x_offset = x_offset
+        self.y_offset = y_offset
 
     def register_resouce(self, resource) :
         self.resource = resource
-        self.pad_width = 2 * self.x_offset + self.cols * self.resource.width
-        self.pad_height = 2 * self.y_offset + self.rows * self.resource.height
+        self.pad_width = self.cols * self.resource.width
+        self.pad_height = self.rows * self.resource.height
 
     def get_size(self) :
         return self.rows, self.cols
 
-    def get_padsize(self) :
-        return (self.pad_width, self.pad_height) 
+    def get_pad_rect(self) :
+        pad_rect = pygame.Rect(self.x_offset, self.y_offset, self.pad_width, self.pad_height)
+        return pad_rect
 
     def get_pos(self, screen_xy) :
         for y in range(self.rows) :
@@ -89,14 +93,51 @@ class map_object :
         height = self.resource.height
         map_rect = pygame.Rect(self.x_offset, self.y_offset, width, height)
 
-        # map[0][0] is left and bottom
+        # map[0][0] is left and top
         map_rect.x += x * width 
-        map_rect.y += ((self.rows - 1) - y) * height
+        map_rect.y += y * height
+        # map_rect.y += ((self.rows - 1) - y) * height        
         return map_rect        
 
     def get_map_type(self, x, y) :
         return self.map[x][y]
 
+    def set_map_type(self, x, y, map_type) :
+        if map_type != None :
+            self.map[x][y] = map_type 
+
+class resource_map(map_object) :
+    def __init__(self, rows, cols, x_offset = MAP_XOFFSET, y_offset = MAP_YOFFSET) :
+        super().__init__(rows, cols, x_offset, y_offset)
+        self.sel_x = 0
+        self.sel_y = 0
+
+    def select(self, x, y) :
+        self.sel_x = x
+        self.sel_y = y
+
+    def get_select(self) :
+        return self.map[self.sel_x][self.sel_y]
+
+    def draw(self) :
+        map_rect = self.get_map_rect(0, 0)
+
+        for y in range(self.rows) :
+            for x in range(self.cols) :
+                if x == self.sel_x and y == self.sel_y :
+                    pygame.draw.rect(gctrl.gamepad, COLOR_GRAY, map_rect, 0, 1)
+                else :
+                    pygame.draw.rect(gctrl.gamepad, COLOR_BLACK, map_rect, 0, 1)
+
+                if self.resource.draw(self.map[x][y], map_rect) == False :
+                    pygame.draw.rect(gctrl.gamepad, COLOR_RED, map_rect, 1, 1)
+
+                map_rect.x += map_rect.width
+            map_rect.y += map_rect.height
+            # map_rect.y -= map_rect.height
+            map_rect.x = self.x_offset
+
+class game_map(map_object) :
     def draw(self) :
         map_rect = self.get_map_rect(0, 0)
 
@@ -106,7 +147,8 @@ class map_object :
                     pygame.draw.rect(gctrl.gamepad, COLOR_RED, map_rect, 1, 1)
 
                 map_rect.x += map_rect.width
-            map_rect.y -= map_rect.height
+            map_rect.y += map_rect.height
+            # map_rect.y -= map_rect.height
             map_rect.x = self.x_offset
 
     def load(self, filename = 'default_map.csv') :
@@ -138,10 +180,6 @@ class map_object :
                     file.write(str(self.map[x][y])+', ')
                 file.write(str(self.map[x+1][y]))
                 file.write('\n')
-
-    def edit_map(self, x, y, map_type) :
-        if map_type != None :
-            self.map[x][y] = map_type 
 
 if __name__ == '__main__' :
     print('game map resource and object')
