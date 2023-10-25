@@ -3,7 +3,7 @@
 import sys
 import pygame
 import random
-import time
+from time import sleep
 
 from gresource import *
 
@@ -17,9 +17,6 @@ class game_ctrl :
         self.gamepad = pad
         self.pad_width = width
         self.pad_height = height
-
-    def save_scr_capture(self, prefix) :
-        pygame.image.save(self.gamepad,(prefix + time.strftime('%Y%m%d%H%M%S')+ '.jpg'))
 
 class game_object :
     global gctrl
