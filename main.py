@@ -157,10 +157,14 @@ def init_game_edit() :
     pygame.init()
     clock = pygame.time.Clock()
 
+    # register resource
+    m_res = map_resource()
+    for i, resource_key in enumerate(resource_map_item) :
+        m_res.add(resource_key, game_object(0, 0, get_map_resource(resource_key)))
+
     # map
     map = map_object(MAX_ROWS, MAX_COLS)
-    for i, resource_key in enumerate(resource_map_item) :
-        map.add_objet(resource_key, game_object(0, 0, get_map_resource(resource_key)))
+    map.register_resouce(m_res)
 
     (pad_width, pad_height) = map.get_padsize()
 

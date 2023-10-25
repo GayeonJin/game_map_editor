@@ -28,6 +28,26 @@ map_dict = {
     7 : ['id_block_grass', 'id_tree_ugly'],    
 }
 
+class map_resource :
+    def __init__(self, width = MAP_WIDTH , height = MAP_HEIGHT) :
+        self.object = {}
+        self.width = width
+        self.height = height
+
+    def add(self, key, item) :
+        self.object[key] = item
+        self.width = item.width
+        self.height = item.height
+
+    def draw(self, map_type, rect) :
+        keys = map_dict[map_type]
+        if keys != None :
+            for key in keys :
+                self.object[key].draw(rect)
+
+            return True
+        return False        
+
 class map_object :
     def __init__(self, rows, cols) :
         self.map = []
@@ -40,24 +60,19 @@ class map_object :
             for y in range(rows) :
                 self.map[x].append(1)
 
-        self.object = {}
         self.x_offset = MAP_XOFFSET
         self.y_offset = MAP_YOFFSET
-        self.obj_width = MAP_WIDTH
-        self.obj_height = MAP_HEIGHT
 
-    def add_objet(self, key, map_object) :
-        self.object[key] = map_object
-        self.obj_width = map_object.width 
-        self.obj_height = map_object.height
+    def register_resouce(self, resource) :
+        self.resource = resource
+        self.pad_width = 2 * self.x_offset + self.cols * self.resource.width
+        self.pad_height = 2 * self.y_offset + self.rows * self.resource.height
 
     def get_size(self) :
         return self.rows, self.cols
 
     def get_padsize(self) :
-        pad_width = 2 * self.x_offset + self.cols * self.obj_width 
-        pad_height = 2 * self.y_offset + self.rows * self.obj_height
-        return (pad_width, pad_height) 
+        return (self.pad_width, self.pad_height) 
 
     def get_pos(self, screen_xy) :
         for y in range(self.rows) :
@@ -70,32 +85,28 @@ class map_object :
         return (None, None)
 
     def get_map_rect(self, x, y) :
-        map_rect = pygame.Rect(self.x_offset, self.y_offset, self.obj_width , self.obj_height)
+        width = self.resource.width
+        height = self.resource.height
+        map_rect = pygame.Rect(self.x_offset, self.y_offset, width, height)
 
         # map[0][0] is left and bottom
-        map_rect.x += x * self.obj_width 
-        map_rect.y += ((self.rows - 1) - y) * self.obj_height
+        map_rect.x += x * width 
+        map_rect.y += ((self.rows - 1) - y) * height
         return map_rect        
 
     def get_map_type(self, x, y) :
         return self.map[x][y]
 
     def draw(self) :
-        map_rect = pygame.Rect(self.x_offset, self.y_offset, self.obj_width, self.obj_height)
+        map_rect = self.get_map_rect(0, 0)
 
-        # map[0][0] is left and bottom
-        map_rect.y += (self.rows - 1) * self.obj_height 
         for y in range(self.rows) :
             for x in range(self.cols) :
-                keys = map_dict[self.map[x][y]]
-                if keys != None :
-                    for key in keys :
-                        self.object[key].draw(map_rect)
-                else :
+                if self.resource.draw(self.map[x][y], map_rect) == False :
                     pygame.draw.rect(gctrl.gamepad, COLOR_RED, map_rect, 1, 1)
 
-                map_rect.x += self.obj_width
-            map_rect.y -= self.obj_height
+                map_rect.x += map_rect.width
+            map_rect.y -= map_rect.height
             map_rect.x = self.x_offset
 
     def load(self, filename = 'default_map.csv') :
@@ -133,4 +144,4 @@ class map_object :
             self.map[x][y] = map_type 
 
 if __name__ == '__main__' :
-    print('map object')
+    print('game map resource and object')
