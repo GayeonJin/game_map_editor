@@ -7,7 +7,7 @@ import pygame
 import random
 
 from gresource import *
-from font_bitmap import *
+from map import *
 
 CURSOR_MOVE_LEFT = 1
 CURSOR_MOVE_DOWN = 2
@@ -30,14 +30,14 @@ class cursor_object :
         self.y = y
 
     def move(self, direction) :
-        if direction == CURSOR_MOVE_UP :
-            self.y -= 1
-            if self.y < 0 :
-                self.y = 0        
-        elif direction == CURSOR_MOVE_DOWN:
+        if direction == CURSOR_MOVE_UP:
             self.y += 1
             if self.y >= self.rows :
                 self.y = self.rows - 1
+        elif direction == CURSOR_MOVE_DOWN :
+            self.y -= 1
+            if self.y < 0 :
+                self.y = 0
         elif direction == CURSOR_MOVE_LEFT :
             self.x -= 1
             if self.x < 0 :
