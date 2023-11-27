@@ -125,12 +125,12 @@ class resource_map(map_object) :
         for y in range(self.rows) :
             for x in range(self.cols) :
                 if x == self.sel_x and y == self.sel_y :
-                    pygame.draw.rect(gctrl.gamepad, COLOR_GRAY, map_rect, 0, 1)
+                    pygame.draw.rect(gctrl.surface, COLOR_GRAY, map_rect, 0, 1)
                 else :
-                    pygame.draw.rect(gctrl.gamepad, COLOR_BLACK, map_rect, 0, 1)
+                    pygame.draw.rect(gctrl.surface, COLOR_BLACK, map_rect, 0, 1)
 
                 if self.resource.draw(self.map[x][y], map_rect) == False :
-                    pygame.draw.rect(gctrl.gamepad, COLOR_RED, map_rect, 1, 1)
+                    pygame.draw.rect(gctrl.surface, COLOR_RED, map_rect, 1, 1)
 
                 map_rect.x += map_rect.width
             map_rect.y += map_rect.height
@@ -144,7 +144,7 @@ class game_map(map_object) :
         for y in range(self.rows) :
             for x in range(self.cols) :
                 if self.resource.draw(self.map[x][y], map_rect) == False :
-                    pygame.draw.rect(gctrl.gamepad, COLOR_RED, map_rect, 1, 1)
+                    pygame.draw.rect(gctrl.surface, COLOR_RED, map_rect, 1, 1)
 
                 map_rect.x += map_rect.width
             map_rect.y += map_rect.height

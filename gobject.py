@@ -7,23 +7,7 @@ import time
 
 from gresource import *
 
-class game_ctrl :
-    def __init__(self) :
-        self.gamepad = None 
-        self.pad_width = 640
-        self.pad_height = 320
-
-    def set_param(self, pad, width, height) :
-        self.gamepad = pad
-        self.pad_width = width
-        self.pad_height = height
-
-    def save_scr_capture(self, prefix) :
-        pygame.image.save(self.gamepad,(prefix + time.strftime('%Y%m%d%H%M%S')+ '.jpg'))
-
 class game_object :
-    global gctrl
-
     def __init__(self, x, y, resource_path) :
         if resource_path != None :
             self.object = pygame.image.load(resource_path)
@@ -50,54 +34,15 @@ class game_object :
 
         if self.y < 0 :
             self.y = 0
-        elif self.y > (gctrl.pad_height - self.height) :
-            self.y = (gctrl.pad_height - self.height)
+        elif self.y > (gctrl.height - self.height) :
+            self.y = (gctrl.height - self.height)
 
         self.ex = self.x + self.width - 1
         self.ey = self.y + self.height - 1
 
-    def draw(self) :
-        if self.object != None :
-            gctrl.gamepad.blit(self.object, (self.x, self.y))
-
     def draw(self, rect) :
         if self.object != None :
-            gctrl.gamepad.blit(self.object, rect)
-
-    def is_out_of_range(self) :
-        if self.x <= 0 or self.x >= gctrl.pad_width :
-            return True
-        else :
-            return False
-
-    def is_life(self) :
-        if self.life_count > 0 :
-            return True
-        else :
-            return False
-    
-    def set_life_count(self, count) :
-        self.life_count = count
-        if self.life_count > 0 :
-            self.life = True
-
-    def get_life_count(self) :
-        return self.life_count
-    
-    def kill_life(self) :
-        self.life_count -= 1
-        if self.life_count == 0 :
-            self.life = False
-            return False
-        else :
-            return True
-
-    def check_crash(self, enemy_item) :
-        if self.object != None and enemy_item.object != None :
-            if self.ex > enemy_item.x :
-                if (self.y > enemy_item.y and self.y < enemy_item.ey) or (self.ey > enemy_item.y and self.ey < enemy_item.ey) :
-                    return True
-        return False
+            gctrl.surface.blit(self.object, rect)
 
 gctrl = game_ctrl()
 

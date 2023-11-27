@@ -24,12 +24,7 @@ INFO_OFFSET = 10
 INFO_FONT = 20
 
 def draw_message(str) :
-    font = pygame.font.Font('Verdana', 40)
-    text_suf = font.render(str, True, COLOR_BLACK)
-    text_rect = text_suf.get_rect()
-    text_rect.center = ((gctrl.pad_width / 2), (gctrl.pad_height / 2))
-
-    gctrl.gamepad.blit(text_suf, text_rect)
+    gctrl.draw_string(str, 0, 0, ALIGN_CENTER, 40, COLOR_BLACK)
     pygame.display.update()
     sleep(2)
 
@@ -37,15 +32,14 @@ def draw_info() :
     font = pygame.font.SysFont('Verdana', INFO_FONT)
     info = font.render('F1 : load map   F2 : save map   F10 : capture scr   1-7 : item  space : select', True, COLOR_BLACK)
 
-    pygame.draw.rect(gctrl.gamepad, COLOR_PURPLE, (0, gctrl.pad_height - INFO_HEIGHT, gctrl.pad_width, INFO_HEIGHT))
-    gctrl.gamepad.blit(info, (INFO_OFFSET * 2, gctrl.pad_height - INFO_FONT - INFO_OFFSET))
+    pygame.draw.rect(gctrl.surface, COLOR_PURPLE, (0, gctrl.height - INFO_HEIGHT, gctrl.width, INFO_HEIGHT))
+    gctrl.surface.blit(info, (INFO_OFFSET * 2, gctrl.height - INFO_FONT - INFO_OFFSET))
 
 def terminate() :
     pygame.quit()
     sys.exit()
 
 def edit_map() :
-    global clock
     global map, res_ctrl
 
     cursor = cursor_object(map)
@@ -137,7 +131,7 @@ def edit_map() :
             map_type = 0
             
         # Clear gamepad
-        gctrl.gamepad.fill(COLOR_WHITE)
+        gctrl.surface.fill(COLOR_WHITE)
 
         # Draw map
         map.draw()
@@ -152,29 +146,21 @@ def edit_map() :
         draw_info()
 
         pygame.display.update()
-        clock.tick(60)
+        gctrl.clock.tick(FPS)
 
 def start_game_edit() :
     # Clear gamepad
-    gctrl.gamepad.fill(COLOR_WHITE)
+    gctrl.surface.fill(COLOR_WHITE)
 
-    font = pygame.font.Font('freesansbold.ttf', 20)
-    text_suf = font.render(TITLE_STR, True, COLOR_BLACK)
-    text_rect = text_suf.get_rect()
-    text_rect.center = ((gctrl.pad_width / 2), (gctrl.pad_height / 2))
-    gctrl.gamepad.blit(text_suf, text_rect)
+    gctrl.draw_string(TITLE_STR, 0, 0, ALIGN_CENTER, 40, COLOR_BLACK)
 
     help_str = ['e : edit map',
                 't : test map',
                 'x : exit']
 
-    font1 = pygame.font.SysFont(None, 25)
     for i, help in enumerate(help_str) :
-        text_suf1 = font1.render(help, True, COLOR_BLUE)
-        text_rect1 = text_suf1.get_rect()
-        text_rect1.top = text_rect.bottom + 50 + i * 25
-        text_rect1.centerx = gctrl.pad_width / 2
-        gctrl.gamepad.blit(text_suf1, text_rect1)
+        y_offset = 150 - i * 30
+        gctrl.draw_string(help, 0, y_offset, ALIGN_CENTER | ALIGN_BOTTOM, 30, COLOR_BLUE)
 
     while True :
         for event in pygame.event.get():
@@ -191,14 +177,10 @@ def start_game_edit() :
                     terminate()
 
         pygame.display.update()
-        clock.tick(60)    
+        gctrl.clock.tick(FPS)  
        
 def init_game_edit() :
-    global clock
     global map, res_ctrl
-
-    pygame.init()
-    clock = pygame.time.Clock()
 
     # register resource
     m_res = map_resource()
@@ -221,7 +203,7 @@ def init_game_edit() :
     pad_width = map_rect.width
     pad_height = res_ctrl_rect.bottom + INFO_HEIGHT
 
-    gctrl.set_param(pygame.display.set_mode((pad_width, pad_height)), pad_width, pad_height)
+    gctrl.set_surface(pygame.display.set_mode((pad_width, pad_height)))
     pygame.display.set_caption(TITLE_STR)
 
 if __name__ == '__main__' :
